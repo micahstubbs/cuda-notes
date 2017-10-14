@@ -2,13 +2,16 @@
 
 cd Downloads
 
+# remove newer driver
+apt-get remove --purge nvidia-384 nvidia-modprobe nvidia-settings
+
 # install cuda 8
 sudo sh cuda_8.0.61_375.26_linux.run --override
 # Do you accept the previously read EULA?
 # accept/decline/quit:    accept
 
 # Install NVIDIA Accelerated Graphics Driver for Linux-x86_64 375.26?
-# (y)es/(n)o/(q)uit: no
+# (y)es/(n)o/(q)uit: yes
 
 # Install the CUDA 8.0 Toolkit?
 # (y)es/(n)o/(q)uit: yes
@@ -42,6 +45,29 @@ nvidia-smi
 
 # now let's install the patch
 sudo sh cuda_8.0.61.2_linux.run
+
+# now lets swictch back to cuDNN v5.1 that works with Theano
+# http://docs.nvidia.com/deeplearning/sdk/cudnn-install/index.html
+
+# find out where your cuda install is
+which nvcc
+# /usr/local/cuda-8.0/bin/nvcc
+
+tar -xvzf cudnn-8.0-linux-x64-v5.1.tgz
+cd cuda
+sudo cp -P include/cudnn.h /usr/include
+sudo cp -P lib64/libcudnn* /usr/lib/x86_64-linux-gnu/
+sudo chmod a+r /usr/lib/x86_64-linux-gnu/libcudnn*
+
+# to check that the cudnn installation worked:
+cat /usr/include/cudnn.h | grep CUDNN_MAJOR -A 2
+
+
+#
+#
+# section on cuDNN v.6.0
+# 
+#
 
 # now lets switch back to cuDNN v6.0
 #
